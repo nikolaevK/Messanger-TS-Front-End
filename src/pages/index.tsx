@@ -1,17 +1,32 @@
+import Auth from "@/components/Auth";
+import Chat from "@/components/chat/Chat";
+import { Box, Button } from "@chakra-ui/react";
 import { NextPageContext } from "next";
-import { getSession, signIn, signOut, useSession } from "next-auth/react";
+import { getSession, signOut, useSession } from "next-auth/react";
 
 export default function Home() {
   const { data: session } = useSession();
-  console.log(session);
+
+  // Once username created, next auth needs to be reloaded
+  const reloadSession = () => {
+    const event = new Event("visibilitychange");
+    document.dispatchEvent(event);
+  };
+
   return (
-    <div>
-      <button onClick={() => signIn("google")}>SignIn</button>
-      <button onClick={() => signOut()}>Signout</button>
-    </div>
+    <Box>
+      {session?.user.username ? (
+        <Chat session={session} />
+      ) : (
+        <>
+          <Auth session={session} reloadSession={reloadSession} />
+        </>
+      )}
+    </Box>
   );
 }
 
+// Server side renders session
 export async function getServerSideProps(context: NextPageContext) {
   const session = await getSession(context);
 
