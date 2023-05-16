@@ -1,8 +1,9 @@
 import Auth from "@/components/Auth";
 import Chat from "@/components/chat/Chat";
 import { Box, Button } from "@chakra-ui/react";
-import { NextPageContext } from "next";
+import { getServerSession } from "next-auth/next";
 import { getSession, signOut, useSession } from "next-auth/react";
+import { authOptions } from "./api/auth/[...nextauth]";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -27,8 +28,8 @@ export default function Home() {
 }
 
 // Server side renders session
-export async function getServerSideProps(context: NextPageContext) {
-  const session = await getSession(context);
+export async function getServerSideProps({ req, res }: any) {
+  const session = await getServerSession(req, res, authOptions);
 
   return {
     props: {

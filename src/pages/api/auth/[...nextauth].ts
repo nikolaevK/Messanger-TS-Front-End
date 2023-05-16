@@ -2,10 +2,11 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
+import type { NextAuthOptions } from "next-auth";
 
 const prisma = new PrismaClient();
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -19,4 +20,6 @@ export default NextAuth({
       return { ...session, user: { ...session.user, ...user } };
     },
   },
-});
+};
+
+export default NextAuth(authOptions);

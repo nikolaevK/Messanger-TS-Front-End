@@ -7,5 +7,6 @@ interface ChatProps {
 }
 
 export default function Chat({ session }: ChatProps) {
-  return <Flex height="100vh">Chat</Flex>;
+  console.log(session?.user.username);
+  return <Flex height="100vh">{session?.user.username}</Flex>;
 }

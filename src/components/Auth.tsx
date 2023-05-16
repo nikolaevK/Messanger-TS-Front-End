@@ -24,7 +24,6 @@ interface AuthProps {
 
 export default function Auth({ session, reloadSession }: AuthProps) {
   const userNameRef = useRef<HTMLInputElement>(null);
-  console.log({ session });
   // Accessing the mutation
   // First variable is the return values of createUsername Mutation
   // Second variable is the variables that function takes
@@ -41,7 +40,9 @@ export default function Auth({ session, reloadSession }: AuthProps) {
       const username = userNameRef.current.value;
 
       // passing variable to the mutation
-      const { data } = await createUsername({ variables: { username } });
+      const { data } = await createUsername({
+        variables: { username, session },
+      });
 
       // Check if Mutation has executed
       if (!data?.createUsername) throw new Error();

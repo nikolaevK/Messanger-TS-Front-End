@@ -1,5 +1,7 @@
 // Username interfaces
 
+import { ISODateString, Session } from "next-auth";
+
 export interface CreateUsernameData {
   createUsername: {
     success: boolean;
@@ -9,4 +11,19 @@ export interface CreateUsernameData {
 
 export interface CreateUsernameVariables {
   username: string;
+  session: Session | null;
 }
+
+// export interface SessionFromTheFrontEnd {
+//   session: {
+//     user: {
+//       name: string;
+//       email: string;
+//       image: string;
+//       id: string;
+//       username: string | null;
+//       emailVerified: boolean | null;
+//     };
+//     expires: ISODateString;
+//   };
+// }
