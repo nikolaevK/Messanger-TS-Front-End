@@ -14,6 +14,20 @@ export interface CreateUsernameVariables {
   session: Session | null;
 }
 
+export interface SearchedUser {
+  id: string;
+  username: string;
+}
+
+export interface SearchUsersData {
+  searchUsers: Array<SearchedUser>;
+}
+
+export interface SearchUsersVariables {
+  username: string;
+  session: Session;
+}
+
 // export interface SessionFromTheFrontEnd {
 //   session: {
 //     user: {
