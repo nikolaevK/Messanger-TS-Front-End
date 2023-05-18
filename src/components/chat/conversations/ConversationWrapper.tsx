@@ -12,6 +12,7 @@ export default function ConversationWrapper({
   session,
 }: ConversationWrapperProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const onClose = () => setIsOpen(false);
   return (
     <Box
       //   display={{ base: conversationId ? "none" : "flex", md: "flex" }}
@@ -26,7 +27,7 @@ export default function ConversationWrapper({
       <CreateConversation isOpen={isOpen} setIsOpen={setIsOpen} />
       <CreateConversationModal
         session={session}
-        setIsOpen={setIsOpen}
+        onClose={onClose}
         isOpen={isOpen}
       />
     </Box>

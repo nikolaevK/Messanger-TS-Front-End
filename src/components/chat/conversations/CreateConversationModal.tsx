@@ -2,8 +2,10 @@ import {
   SearchedUser,
   SearchUsersData,
   SearchUsersVariables,
+  CreateConversationVariables,
+  CreateConversationData,
 } from "@/util/types";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import {
   Button,
   Input,
@@ -18,23 +20,30 @@ import {
 import { Session } from "next-auth";
 import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 import UserOperations from "../../../apollographql/operations/user";
+import ConversationOperations from "../../../apollographql/operations/conversation";
 import UserSearchList from "./UserSearchList";
 import Participants from "./Participants";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 
 interface CreateConversationModalProps {
   session: Session;
   isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  onClose: () => void;
 }
 
 export default function CreateConversationModal({
   session,
-  setIsOpen,
+  onClose,
   isOpen,
 }: CreateConversationModalProps) {
   const userNameRef = useRef<HTMLInputElement>(null);
   const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
-  const onClose = () => setIsOpen(false);
+
+  const {
+    user: { id: userId },
+  } = session;
+  const router = useRouter();
 
   // Query searched users from graphql server
   // When useQuery is called by the component, it triggers the query subsequently.
@@ -45,6 +54,12 @@ export default function CreateConversationModal({
     SearchUsersVariables
   >(UserOperations.Queries.searchUsers);
 
+  // Mutation which creates a conversation between participants
+  const [createConversation, { loading: createConversationLoading }] =
+    useMutation<CreateConversationData, CreateConversationVariables>(
+      ConversationOperations.Mutations.createConversation
+    );
+
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!userNameRef.current?.value) return;
@@ -53,16 +68,51 @@ export default function CreateConversationModal({
       variables: { username: userNameRef.current.value, session },
     });
   }
-  console.log(data?.searchUsers);
 
   function addParticipant(user: SearchedUser) {
-    setParticipants((prev) => [...prev, user]);
+    setParticipants((prev) => {
+      if (prev.find((participant) => participant.id === user.id)) return prev;
+      return [...prev, user];
+    });
     if (!userNameRef.current?.value) return;
     userNameRef.current.value = "";
   }
 
   function removeParticipant(userId: string) {
     setParticipants((prev) => prev.filter((p) => p.id !== userId));
+  }
+
+  async function onCreateConversation() {
+    const participantIds = [
+      userId,
+      ...participants.map((participant) => participant.id),
+    ];
+
+    try {
+      const { data } = await createConversation({
+        variables: {
+          participantIds,
+          session,
+        },
+      });
+
+      if (!data?.createConversation)
+        throw new Error("Failed to create conversation");
+
+      const {
+        createConversation: { conversationId },
+      } = data;
+
+      router.push({ query: { conversationId } });
+
+      setParticipants([]);
+      onClose(); // closes modal
+      if (!userNameRef.current?.value) return;
+      userNameRef.current.value = "";
+    } catch (error: any) {
+      console.log("onConversation error", error);
+      toast.error(error?.message);
+    }
   }
 
   return (
@@ -98,6 +148,16 @@ export default function CreateConversationModal({
                   participants={participants}
                   removeParticipant={removeParticipant}
                 />
+                <Button
+                  bg="messageBlue.100"
+                  width="100%"
+                  mt={6}
+                  _hover={{ bg: "messageBlue.100" }}
+                  isLoading={createConversationLoading}
+                  onClick={onCreateConversation}
+                >
+                  Create Conversation
+                </Button>
               </>
             )}
           </ModalBody>

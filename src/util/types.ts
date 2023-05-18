@@ -28,16 +28,15 @@ export interface SearchUsersVariables {
   session: Session;
 }
 
-// export interface SessionFromTheFrontEnd {
-//   session: {
-//     user: {
-//       name: string;
-//       email: string;
-//       image: string;
-//       id: string;
-//       username: string | null;
-//       emailVerified: boolean | null;
-//     };
-//     expires: ISODateString;
-//   };
-// }
+// Conversations interfaces
+
+export interface CreateConversationData {
+  createConversation: {
+    conversationId: string;
+  };
+}
+
+export interface CreateConversationVariables {
+  participantIds: Array<string>;
+  session: Session;
+}

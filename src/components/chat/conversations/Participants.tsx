@@ -19,7 +19,7 @@ export default function Participants({
           direction="row"
           key={participant.id}
           align="center"
-          bg="whiteAlpha.200"
+          bg="whiteAlpha.300"
           borderRadius={4}
           p={2}
         >
