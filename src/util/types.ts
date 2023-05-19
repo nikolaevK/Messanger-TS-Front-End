@@ -40,3 +40,47 @@ export interface CreateConversationVariables {
   participantIds: Array<string>;
   session: Session;
 }
+
+interface User {
+  id: string;
+  username: string;
+  _typename: string;
+}
+
+export interface Participant {
+  hasSeenLatestMessage: boolean;
+  user: User;
+  typename: string;
+}
+
+export interface Conversation {
+  id: string;
+  latestMessage: Message;
+  participants: Array<Participant>;
+  createdAt: Date;
+  updatedAt: Date;
+  _typename: string;
+}
+
+export interface ConversationsData {
+  conversations: Array<Conversation>;
+}
+
+export interface ConversationsQueryVariables {
+  session: Session;
+}
+
+export interface Message {
+  body: string;
+  conversationId: string;
+  senderId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  id: string;
+  sender: Sender;
+}
+
+export interface Sender {
+  id: string;
+  username: string;
+}
