@@ -1,4 +1,8 @@
-import { ConversationsData, ConversationsQueryVariables } from "@/util/types";
+import {
+  Conversation,
+  ConversationsData,
+  ConversationsQueryVariables,
+} from "@/util/types";
 import { Box } from "@chakra-ui/react";
 
 import { Session } from "next-auth";
@@ -9,6 +13,7 @@ import ConversationsOperations from "../../../apollographql/operations/conversat
 import { useQuery } from "@apollo/client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import ConversationList from "./ConversationList";
 
 interface ConversationWrapperProps {
   session: Session;
@@ -23,6 +28,7 @@ export default function ConversationWrapper({
   } = router;
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
+
   const {
     data: conversationsData,
     error: conversationError,
@@ -38,8 +44,8 @@ export default function ConversationWrapper({
     }
   );
 
-  // Subscription which is responsible for show updates when new conversation is created
-  function subscribeToNewConversations() {
+  // Subscription which is responsible for displaying updates when new conversation is created
+  const subscribeToNewConversations = () => {
     subscribeToMore({
       document: ConversationsOperations.Subscriptions.conversationCreated,
       variables: { session },
@@ -49,24 +55,31 @@ export default function ConversationWrapper({
           subscriptionData,
         }: {
           subscriptionData: {
-            data: { conversationCreated: ConversationsData };
+            data: { conversationCreated: Conversation };
           };
         }
       ) => {
         if (!subscriptionData.data) return prev;
 
         const newConversation = subscriptionData.data.conversationCreated;
+        if (
+          prev.conversations.find(
+            (conversation) => conversation.id === newConversation?.id
+          )
+        ) {
+          return prev;
+        }
 
         return Object.assign({}, prev, {
-          conversations: [newConversation, ...prev.conversations],
+          conversations: [
+            subscriptionData.data.conversationCreated,
+            ...prev.conversations,
+          ],
         });
       },
     });
-  }
-
-  useEffect(() => {
-    subscribeToNewConversations();
-  }, []);
+  };
+  useEffect(() => subscribeToNewConversations(), []);
 
   return (
     <Box
@@ -85,11 +98,10 @@ export default function ConversationWrapper({
         onClose={onClose}
         isOpen={isOpen}
       />
-      <div>
-        {conversationsData?.conversations.map((c) => (
-          <div key={c.id}>{c.id}</div>
-        ))}
-      </div>
+      <ConversationList
+        session={session}
+        conversations={conversationsData?.conversations || []}
+      />
     </Box>
   );
 }

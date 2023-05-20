@@ -9,7 +9,6 @@ interface ChatProps {
 }
 
 export default function Chat({ session }: ChatProps) {
-  console.log(session?.user.username);
   return (
     <Flex height="100vh">
       <ConversationWrapper session={session} />

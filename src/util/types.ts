@@ -59,7 +59,6 @@ export interface Conversation {
   participants: Array<Participant>;
   createdAt: Date;
   updatedAt: Date;
-  _typename: string;
 }
 
 export interface ConversationsData {
