@@ -3,6 +3,7 @@ import {
   ConversationsData,
   ConversationsQueryVariables,
   MarkConversationAsReadVariables,
+  Participant,
 } from "@/util/types";
 import { Box } from "@chakra-ui/react";
 import { Session } from "next-auth";
@@ -10,7 +11,7 @@ import React, { useEffect, useState } from "react";
 import CreateConversation from "./CreateConversation";
 import CreateConversationModal from "./CreateConversationModal";
 import ConversationsOperations from "../../../apollographql/operations/conversation";
-import { useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
 import ConversationList from "./ConversationList";
@@ -104,6 +105,61 @@ export default function ConversationWrapper({
     try {
       await markConversationAsRead({
         variables: { session, conversationId, userId },
+        optimisticResponse: {
+          markConversationAsRead: true,
+        },
+        // Updating apollo cache in order to display state change without reloading the page
+
+        // Get conversationParticipant from the cache
+        update: (cache) => {
+          const participantsFragment = cache.readFragment<{
+            participants: Array<Participant>;
+          }>({
+            id: `Conversation:${conversationId}`,
+            fragment: gql`
+              fragment Participants on Conversation {
+                participants {
+                  user {
+                    id
+                    username
+                  }
+                  hasSeenLatestMessage
+                }
+              }
+            `,
+          });
+
+          if (!participantsFragment) return;
+
+          // Making copy of the participants to find index of userParticipant
+          const participants = [...participantsFragment.participants];
+          const userParticipantIdx = participants.findIndex(
+            (participant) => participant.user.id === userId
+          );
+
+          if (userParticipantIdx === -1) return; // Not found
+
+          const userParticipant = participants[userParticipantIdx];
+          // updating the reading status
+          participants[userParticipantIdx] = {
+            ...userParticipant,
+            hasSeenLatestMessage: true,
+          };
+
+          // Writing updated values to cache
+          cache.writeFragment({
+            id: `Conversation:${conversationId}`,
+            fragment: gql`
+              fragment UpdateParticipant on Conversation {
+                participants
+              }
+            `,
+            // return data
+            data: {
+              participants,
+            },
+          });
+        },
       });
     } catch (error: any) {
       console.log("onViewConversation", error);
