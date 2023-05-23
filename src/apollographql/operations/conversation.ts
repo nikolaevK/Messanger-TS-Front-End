@@ -42,6 +42,19 @@ export default {
         }
       }
     `,
+    markConversationAsRead: gql`
+      mutation MarkConversationAsRead(
+        $userId: String!
+        $conversationId: String!
+        $session: Session!
+      ) {
+        markConversationAsRead(
+          userId: $userId
+          conversationId: $conversationId
+          session: $session
+        )
+      }
+    `,
   },
   Subscriptions: {
     conversationCreated: gql`

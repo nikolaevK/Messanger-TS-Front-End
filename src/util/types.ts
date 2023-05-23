@@ -41,7 +41,7 @@ export interface CreateConversationVariables {
   session: Session;
 }
 
-interface User {
+export interface User {
   id: string;
   username: string;
   _typename: string;
@@ -66,6 +66,12 @@ export interface ConversationsData {
 }
 
 export interface ConversationsQueryVariables {
+  session: Session;
+}
+
+export interface MarkConversationAsReadVariables {
+  userId: string;
+  conversationId: string;
   session: Session;
 }
 
