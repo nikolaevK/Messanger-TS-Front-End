@@ -1,4 +1,4 @@
-import { formatUsernames } from "@/util/formatUsernames";
+import { formatUsernames } from "@/util/functions";
 import { Conversation } from "@/util/types";
 import { Avatar, Box, Flex, Stack, Text } from "@chakra-ui/react";
 import { formatRelative } from "date-fns";

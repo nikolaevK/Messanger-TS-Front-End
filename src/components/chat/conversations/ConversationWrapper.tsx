@@ -7,9 +7,7 @@ import {
 } from "@/util/types";
 import { Box } from "@chakra-ui/react";
 import { Session } from "next-auth";
-import React, { useEffect, useState } from "react";
-import CreateConversation from "./CreateConversation";
-import CreateConversationModal from "./CreateConversationModal";
+import React, { useEffect } from "react";
 import ConversationsOperations from "../../../apollographql/operations/conversation";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import toast from "react-hot-toast";
@@ -19,10 +17,12 @@ import SkeletonLoading from "@/components/common/SkeletonLoading";
 
 interface ConversationWrapperProps {
   session: Session;
+  screenSize: number;
 }
 
 export default function ConversationWrapper({
   session,
+  screenSize,
 }: ConversationWrapperProps) {
   const router = useRouter();
   const {
@@ -83,7 +83,9 @@ export default function ConversationWrapper({
       },
     });
   };
-  useEffect(() => subscribeToNewConversations(), []);
+  useEffect(() => {
+    subscribeToNewConversations();
+  }, []);
 
   // Marking conversation read Mutation
   const [markConversationAsRead] = useMutation<
@@ -177,7 +179,12 @@ export default function ConversationWrapper({
       px={3}
     >
       {conversationLoading ? (
-        <SkeletonLoading count={7} height={"80px"} />
+        <SkeletonLoading
+          // Will create dummy animation while loading
+          // Quantity depends on users screen
+          count={screenSize && Math.floor(screenSize! / 80)}
+          height={"80px"}
+        />
       ) : (
         <>
           <ConversationList
