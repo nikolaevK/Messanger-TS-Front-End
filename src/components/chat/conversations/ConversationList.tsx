@@ -50,6 +50,7 @@ export default function ConversationList({
         );
         return (
           <ConversationItem
+            session={session}
             conversation={conversation}
             isSelected={conversation.id === router.query.conversationId}
             key={conversation.id}

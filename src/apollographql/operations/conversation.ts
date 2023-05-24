@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { GraphQLInputObjectType, GraphQLString } from "graphql";
 
 const ConversationFields = `
   id
@@ -6,6 +7,7 @@ const ConversationFields = `
     user {
       id
       username
+      image
     }
     hasSeenLatestMessage
   }
@@ -34,7 +36,7 @@ export default {
   Mutations: {
     createConversation: gql`
       mutation CreateConversation(
-        $participantIds: [String]!
+        $participantIds: [String]
         $session: Session!
       ) {
         createConversation(participantIds: $participantIds, session: $session) {

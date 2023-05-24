@@ -6,6 +6,7 @@ export default {
         searchUsers(username: $username, session: $session) {
           id
           username
+          image
         }
       }
     `,

@@ -14,11 +14,6 @@ export interface CreateUsernameVariables {
   session: Session | null;
 }
 
-export interface SearchedUser {
-  id: string;
-  username: string;
-}
-
 export interface SearchUsersData {
   searchUsers: Array<SearchedUser>;
 }
@@ -36,6 +31,12 @@ export interface CreateConversationData {
   };
 }
 
+export interface SearchedUser {
+  id: string;
+  username: string;
+  image: string;
+}
+
 export interface CreateConversationVariables {
   participantIds: Array<string>;
   session: Session;
@@ -44,6 +45,7 @@ export interface CreateConversationVariables {
 export interface User {
   id: string;
   username: string;
+  image: string;
   _typename: string;
 }
 

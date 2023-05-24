@@ -124,6 +124,7 @@ export default function ConversationWrapper({
                   user {
                     id
                     username
+                    image
                   }
                   hasSeenLatestMessage
                 }
@@ -171,7 +172,7 @@ export default function ConversationWrapper({
   return (
     <Box
       display={{ base: conversationId ? "none" : "flex", md: "flex" }}
-      width={{ base: "100%", md: "400px" }}
+      width={{ base: "100%", md: "500px" }}
       bg="whiteAlpha.200"
       flexDirection="column"
       gap={4}
@@ -181,7 +182,7 @@ export default function ConversationWrapper({
       {conversationLoading ? (
         <SkeletonLoading
           // Will create dummy animation while loading
-          // Quantity depends on users screen
+          // Quantity depends on the size of user's screen
           count={screenSize && Math.floor(screenSize! / 80)}
           height={"80px"}
         />

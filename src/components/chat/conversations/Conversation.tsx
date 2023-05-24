@@ -1,8 +1,10 @@
-import { formatUsernames } from "@/util/functions";
+import { formatUserImageURL, formatUsernames } from "@/util/functions";
 import { Conversation } from "@/util/types";
-import { Avatar, Box, Flex, Stack, Text } from "@chakra-ui/react";
+import { Avatar, AvatarGroup, Box, Flex, Stack, Text } from "@chakra-ui/react";
 import { formatRelative } from "date-fns";
 import enUS from "date-fns/locale/en-US";
+import { Session } from "next-auth";
+import { useRouter } from "next/router";
 import React from "react";
 import { GoPrimitiveDot } from "react-icons/go";
 
@@ -12,6 +14,7 @@ interface ConversationItemProps {
   onClick: () => void;
   isSelected: boolean;
   hasSeenLatestMessage: boolean;
+  session: Session;
 }
 
 const formatRelativeLocale = {
@@ -27,7 +30,13 @@ export default function ConversationItem({
   userId,
   conversation,
   onClick,
+  session,
 }: ConversationItemProps) {
+  const { participants } = conversation;
+  const {
+    query: { conversationId },
+  } = useRouter();
+
   return (
     <Stack
       mt={1}
@@ -38,16 +47,34 @@ export default function ConversationItem({
       cursor="pointer"
       borderRadius={4}
       bg={isSelected ? "whiteAlpha.200" : "none"}
+      borderBottom={!conversationId ? "1px" : ""}
+      borderColor="whiteAlpha.300"
       _hover={{ bg: "whiteAlpha.200" }}
       position="relative"
       onClick={onClick}
+      height="80px"
     >
       <Flex position="absolute" left="px">
         {hasSeenLatestMessage === false && (
           <GoPrimitiveDot fontSize={18} color="#3d84f7" />
         )}
       </Flex>
-      <Avatar />
+
+      {participants.length <= 2 ? (
+        formatUserImageURL(participants, userId).map((url, index) => (
+          <Avatar src={url} key={index} />
+        ))
+      ) : (
+        <AvatarGroup
+          size={participants.length > 3 ? "sm" : "md"}
+          max={2}
+          borderColor="transparent"
+        >
+          {formatUserImageURL(participants, userId).map((url, index) => (
+            <Avatar src={url} key={index} />
+          ))}
+        </AvatarGroup>
+      )}
       <Flex justify="space-between" width="80%" height="100%">
         <Flex direction="column" width="70%" height="100%">
           <Text

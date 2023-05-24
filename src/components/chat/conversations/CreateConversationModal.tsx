@@ -18,7 +18,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { Session } from "next-auth";
-import React, { Dispatch, SetStateAction, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import UserOperations from "../../../apollographql/operations/user";
 import ConversationOperations from "../../../apollographql/operations/conversation";
 import UserSearchList from "./UserSearchList";
@@ -84,8 +84,12 @@ export default function CreateConversationModal({
 
   async function onCreateConversation() {
     const participantIds = [
-      userId,
-      ...participants.map((participant) => participant.id),
+      JSON.stringify({
+        id: userId,
+        image: session.user.image!,
+        username: session.user.username,
+      }),
+      ...participants.map((participant) => JSON.stringify(participant)),
     ];
 
     try {
@@ -117,7 +121,14 @@ export default function CreateConversationModal({
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} size={{ base: "xs", md: "lg" }}>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setParticipants([]);
+          return onClose();
+        }}
+        size={{ base: "xs", md: "lg" }}
+      >
         <ModalOverlay />
         <ModalContent bg="#2d2d2d" pb={4}>
           <ModalHeader color="white">Create Conversation</ModalHeader>

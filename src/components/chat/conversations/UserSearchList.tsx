@@ -11,7 +11,6 @@ export default function UserSearchList({
   users,
   addParticipant,
 }: UserSearchListProps) {
-  console.log(users);
   return (
     <>
       {users.length < 0 ? (

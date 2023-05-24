@@ -11,3 +11,13 @@ export function formatUsernames(
 
   return usernames.join(", ");
 }
+
+// Returns all participants URLS but the the current user
+export function formatUserImageURL(
+  participants: Array<Participant>,
+  myUserId: string
+): Array<string> {
+  return participants
+    .filter((participant) => participant.user.id != myUserId)
+    .map((participant) => participant.user.image);
+}
