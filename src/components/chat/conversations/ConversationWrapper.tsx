@@ -171,6 +171,8 @@ export default function ConversationWrapper({
 
   return (
     <Box
+      // When conversation created or chosen on mobile, whole left component is hidden
+      // Only FeedWrapper is visible
       display={{ base: conversationId ? "none" : "flex", md: "flex" }}
       width={{ base: "100%", md: "500px" }}
       bg="whiteAlpha.200"
