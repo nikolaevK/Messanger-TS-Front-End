@@ -93,8 +93,8 @@ export default function Header({
 
               <Flex direction="row" fontSize="sm">
                 {formatUsernamesStrings(conversation.participants, userId).map(
-                  (s) => (
-                    <Box>{s}&ensp;</Box>
+                  (s, index) => (
+                    <Box key={index}>{s}&ensp;</Box>
                   )
                 )}
               </Flex>

@@ -3,6 +3,7 @@ import { Session } from "next-auth";
 import { useRouter } from "next/router";
 import { BiMessageDetail } from "react-icons/bi";
 import Header from "./Header";
+import MessageInput from "./MessageInput";
 
 interface FeedWrapperProps {
   session: Session;
@@ -36,6 +37,7 @@ export default function FeedWrapper({ session }: FeedWrapperProps) {
               conversationId={conversationId}
             />
           </Flex>
+          <MessageInput session={session} conversationId={conversationId} />
         </>
       ) : (
         <Flex direction="column" height="100%" justify="center" align="center">

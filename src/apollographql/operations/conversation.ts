@@ -1,5 +1,4 @@
 import { gql } from "@apollo/client";
-import { GraphQLInputObjectType, GraphQLString } from "graphql";
 
 const ConversationFields = `
   id
