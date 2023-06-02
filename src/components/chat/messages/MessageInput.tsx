@@ -11,46 +11,67 @@ interface MessageInputProps {
   conversationId: string;
 }
 
+interface EmojiProps {
+  id: string;
+  keywords: Array<string>;
+  name: string;
+  native: string;
+  shortcodes: string;
+  unified: string;
+}
+
 export default function MessageInput({
   session,
   conversationId,
 }: MessageInputProps) {
   const [message, setMessage] = useState("");
   const [emojiModal, setEmojiModal] = useState(false);
-  console.log(emojiModal);
+
+  function addEmoji(e: EmojiProps) {
+    setMessage(message + e.native);
+  }
+
   return (
-    <Box px={4} py={6} width="100%">
+    <Box px={4} py={6} width="100%" position="relative">
       <form>
-        <Input
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          size="md"
-          placeholder="New Message"
-          position="relative"
-          _focus={{
-            boxShadow: "none",
-            border: "1px solid",
-            borderColor: "whiteAlpha.300",
-          }}
-        />
-        {emojiModal && (
-          <Box position="absolute" bottom={"20"} right={5}>
-            <Picker data={data} theme="dark" />
-          </Box>
-        )}
-        <Flex position="absolute" right={4} bottom={6}>
+        <Flex>
           <Button
             size="md"
             bg="transparent"
             zIndex={10}
             onClick={() => setEmojiModal((prev) => !prev)}
           >
-            <MdOutlineEmojiEmotions color="#3d84f7" />
+            <MdOutlineEmojiEmotions color="#3d84f7" size={25} />
           </Button>
-          <Button size="md" bg="transparent" zIndex={10}>
-            <BsSend color="#3d84f7" />
-          </Button>
+          <Input
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            size="md"
+            placeholder="New Message"
+            _focus={{
+              boxShadow: "none",
+              border: "1px solid",
+              borderColor: "whiteAlpha.300",
+            }}
+          />
         </Flex>
+
+        {emojiModal && (
+          <Box position="absolute" bottom={"20"} left={0}>
+            <Picker data={data} theme="dark" onEmojiSelect={addEmoji} />
+          </Box>
+        )}
+
+        <Button
+          size="md"
+          bg="transparent"
+          zIndex={10}
+          position="absolute"
+          right={4}
+          bottom={6}
+        >
+          <BsSend color="#3d84f7" size={25} />
+        </Button>
       </form>
     </Box>
   );
