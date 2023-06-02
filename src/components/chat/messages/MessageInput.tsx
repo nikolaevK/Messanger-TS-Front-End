@@ -1,23 +1,19 @@
 import { Session } from "next-auth";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Box, Button, Flex, Input } from "@chakra-ui/react";
 import { BsSend } from "react-icons/bs";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import { EmojiProps, SendMessageArgs } from "@/util/types";
+import { useMutation } from "@apollo/client";
+import MessageOperations from "../../../apollographql/operations/message";
+import toast from "react-hot-toast";
+import { ObjectId } from "bson";
 
 interface MessageInputProps {
   session: Session;
   conversationId: string;
-}
-
-interface EmojiProps {
-  id: string;
-  keywords: Array<string>;
-  name: string;
-  native: string;
-  shortcodes: string;
-  unified: string;
 }
 
 export default function MessageInput({
@@ -27,13 +23,49 @@ export default function MessageInput({
   const [message, setMessage] = useState("");
   const [emojiModal, setEmojiModal] = useState(false);
 
+  // Send new message mutation
+  const [sendMessage] = useMutation<{ sendMessage: boolean }, SendMessageArgs>(
+    MessageOperations.Mutation.sendMessage
+  );
+
+  async function onSendMessage(event: React.FormEvent) {
+    event.preventDefault();
+
+    if (message.length < 1) return;
+
+    try {
+      const { id: senderId } = session.user;
+      const messageId = new ObjectId().toString(); //Creates random id
+
+      // Creating a message item object
+      const newMessage: SendMessageArgs = {
+        id: messageId,
+        conversationId,
+        session,
+        senderId,
+        body: message,
+      };
+
+      const { data, errors } = await sendMessage({
+        variables: {
+          ...newMessage,
+        },
+      });
+      if (!data?.sendMessage) throw new Error("sendMessage");
+      setMessage("");
+    } catch (error: any) {
+      console.log("onSendMessage", error);
+      toast.error("message input", error?.message);
+    }
+  }
+
   function addEmoji(e: EmojiProps) {
     setMessage(message + e.native);
   }
 
   return (
     <Box px={4} py={6} width="100%" position="relative">
-      <form>
+      <form onSubmit={onSendMessage}>
         <Flex>
           <Button
             size="md"
@@ -41,7 +73,7 @@ export default function MessageInput({
             zIndex={10}
             onClick={() => setEmojiModal((prev) => !prev)}
           >
-            <MdOutlineEmojiEmotions color="#3d84f7" size={25} />
+            <MdOutlineEmojiEmotions color="#3d84f7" size={30} />
           </Button>
           <Input
             value={message}
@@ -63,6 +95,7 @@ export default function MessageInput({
         )}
 
         <Button
+          onClick={onSendMessage}
           size="md"
           bg="transparent"
           zIndex={10}

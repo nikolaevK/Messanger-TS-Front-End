@@ -1,6 +1,16 @@
+// General Types
+export interface EmojiProps {
+  id: string;
+  keywords: Array<string>;
+  name: string;
+  native: string;
+  shortcodes: string;
+  unified: string;
+}
+
 // Username interfaces
 
-import { ISODateString, Session } from "next-auth";
+import { Session } from "next-auth";
 
 export interface CreateUsernameData {
   createUsername: {
@@ -77,6 +87,8 @@ export interface MarkConversationAsReadVariables {
   session: Session;
 }
 
+// Message
+
 export interface Message {
   body: string;
   conversationId: string;
@@ -90,4 +102,12 @@ export interface Message {
 export interface Sender {
   id: string;
   username: string;
+}
+
+export interface SendMessageArgs {
+  session: Session;
+  id: string;
+  conversationId: string;
+  senderId: string;
+  body: string;
 }
