@@ -33,8 +33,6 @@ export default function Messages({
     },
   });
 
-  console.log({ data });
-
   return (
     <Flex direction="column" justify="flex-end" overflow="hidden">
       {loading && (
@@ -48,7 +46,11 @@ export default function Messages({
       {data?.messages && (
         <Flex direction="column-reverse" overflowY="scroll" height="100%">
           {data?.messages.map((message) => (
-            <MessageString key={message.id} message={message} sentByMe={true} />
+            <MessageString
+              key={message.id}
+              message={message}
+              sentByMe={message.sender.id === userId}
+            />
           ))}
         </Flex>
       )}

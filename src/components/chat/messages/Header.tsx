@@ -66,7 +66,6 @@ export default function Header({
         display={{ md: "none" }}
         color="black"
         bg="none"
-        width="50px"
         onClick={() =>
           router.replace("?conversationId", "/", { shallow: true })
         }

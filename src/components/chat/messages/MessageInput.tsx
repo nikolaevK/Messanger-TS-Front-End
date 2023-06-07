@@ -1,6 +1,6 @@
 import { Session } from "next-auth";
 import { useState } from "react";
-import { Box, Button, Flex, Input } from "@chakra-ui/react";
+import { Box, Button, Flex, Input, Spinner } from "@chakra-ui/react";
 import { BsSend } from "react-icons/bs";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import data from "@emoji-mart/data";
@@ -24,9 +24,10 @@ export default function MessageInput({
   const [emojiModal, setEmojiModal] = useState(false);
 
   // Send new message mutation
-  const [sendMessage] = useMutation<{ sendMessage: boolean }, SendMessageArgs>(
-    MessageOperations.Mutation.sendMessage
-  );
+  const [sendMessage, { loading }] = useMutation<
+    { sendMessage: boolean },
+    SendMessageArgs
+  >(MessageOperations.Mutation.sendMessage);
 
   async function onSendMessage(event: React.FormEvent) {
     event.preventDefault();
@@ -104,7 +105,11 @@ export default function MessageInput({
           right={4}
           bottom={6}
         >
-          <BsSend color="#3d84f7" size={25} />
+          {loading ? (
+            <Spinner color="#3d84f7" />
+          ) : (
+            <BsSend color="#3d84f7" size={25} />
+          )}
         </Button>
       </form>
     </Box>
