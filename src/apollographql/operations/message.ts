@@ -7,6 +7,7 @@ export const MessageFields = `
         username
     }
     body
+    imageUrl
     createdAt
 `;
 

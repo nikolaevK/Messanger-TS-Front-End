@@ -95,6 +95,7 @@ export interface Message {
   senderId: string;
   createdAt: Date;
   updatedAt: Date;
+  imageUrl: string;
   id: string;
   sender: Sender;
 }
@@ -102,6 +103,7 @@ export interface Message {
 export interface Sender {
   id: string;
   username: string;
+  imageUrl: string;
 }
 
 export interface SendMessageArgs {

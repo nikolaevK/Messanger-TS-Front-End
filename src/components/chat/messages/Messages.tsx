@@ -5,6 +5,7 @@ import { Box, Flex, Stack } from "@chakra-ui/react";
 import { Session } from "next-auth";
 import toast from "react-hot-toast";
 import MessageOperations from "../../../apollographql/operations/message";
+import MessageString from "./MessageString";
 
 interface MessagesProps {
   userId: string;
@@ -31,7 +32,9 @@ export default function Messages({
       toast.error(message);
     },
   });
-  console.log(data?.messages);
+
+  console.log({ data });
+
   return (
     <Flex direction="column" justify="flex-end" overflow="hidden">
       {loading && (
@@ -45,7 +48,7 @@ export default function Messages({
       {data?.messages && (
         <Flex direction="column-reverse" overflowY="scroll" height="100%">
           {data?.messages.map((message) => (
-            <Box key={message.id}>{message.body}</Box>
+            <MessageString key={message.id} message={message} sentByMe={true} />
           ))}
         </Flex>
       )}
