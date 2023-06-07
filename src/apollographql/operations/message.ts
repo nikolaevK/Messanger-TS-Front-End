@@ -11,6 +11,15 @@ export const MessageFields = `
 `;
 
 export default {
+  Query: {
+    messages: gql`
+      query Messages($conversationId: String!, $session: Session!) {
+        messages(conversationId: $conversationId, session: $session){
+          ${MessageFields}
+        }
+      }
+    `,
+  },
   Mutation: {
     sendMessage: gql`
       mutation SendMessage(

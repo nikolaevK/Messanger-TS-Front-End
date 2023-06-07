@@ -20,7 +20,7 @@ export default function Chat({ session }: ChatProps) {
   return (
     <Flex height="100vh">
       <ConversationWrapper session={session} screenSize={screenSize!} />
-      <FeedWrapper session={session} />
+      <FeedWrapper session={session} screenSize={screenSize!} />
     </Flex>
   );
 }

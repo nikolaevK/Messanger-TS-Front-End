@@ -111,3 +111,12 @@ export interface SendMessageArgs {
   senderId: string;
   body: string;
 }
+
+export interface MessageData {
+  messages: Array<Message>;
+}
+
+export interface MessagesVariables {
+  conversationId: string;
+  session: Session;
+}

@@ -4,12 +4,14 @@ import { useRouter } from "next/router";
 import { BiMessageDetail } from "react-icons/bi";
 import Header from "./Header";
 import MessageInput from "./MessageInput";
+import Messages from "./Messages";
 
 interface FeedWrapperProps {
   session: Session;
+  screenSize: number;
 }
 
-export default function FeedWrapper({ session }: FeedWrapperProps) {
+export default function FeedWrapper({ session, screenSize }: FeedWrapperProps) {
   const router = useRouter();
   const { conversationId } = router.query;
   const {
@@ -35,6 +37,12 @@ export default function FeedWrapper({ session }: FeedWrapperProps) {
               session={session}
               userId={userId}
               conversationId={conversationId}
+            />
+            <Messages
+              conversationId={conversationId}
+              userId={userId}
+              session={session}
+              screenSize={screenSize}
             />
           </Flex>
           <MessageInput session={session} conversationId={conversationId} />

@@ -53,6 +53,7 @@ export default function MessageInput({
       });
       if (!data?.sendMessage) throw new Error("sendMessage");
       setMessage("");
+      setEmojiModal(false);
     } catch (error: any) {
       console.log("onSendMessage", error);
       toast.error("message input", error?.message);
