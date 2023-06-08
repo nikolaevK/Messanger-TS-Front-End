@@ -122,3 +122,18 @@ export interface MessagesVariables {
   conversationId: string;
   session: Session;
 }
+
+export interface MessageSubscriptionData {
+  subscriptionData: {
+    data: {
+      messageSent: {
+        body: string;
+        createdAt: Date;
+        id: string;
+        sender: Sender;
+        imageUrl: string;
+        __typename: string;
+      };
+    };
+  };
+}
