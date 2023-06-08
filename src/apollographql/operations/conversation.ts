@@ -60,5 +60,14 @@ export default {
           }
         }
     `,
+    conversationUpdated: gql`
+      subscription ConversationUpdated($session: Session!) {
+        conversationUpdated(session: $session) {
+          conversation {
+            ${ConversationFields}
+          }
+        }
+      }
+    `,
   },
 };

@@ -62,6 +62,7 @@ export interface User {
 export interface Participant {
   hasSeenLatestMessage: boolean;
   user: User;
+  imageUrl: string;
   typename: string;
 }
 
@@ -71,6 +72,13 @@ export interface Conversation {
   participants: Array<Participant>;
   createdAt: Date;
   updatedAt: Date;
+  _typename: string;
+}
+
+export interface ConversationUpdatedData {
+  conversationUpdated: {
+    conversation: Conversation;
+  };
 }
 
 export interface ConversationsData {
@@ -103,7 +111,7 @@ export interface Message {
 export interface Sender {
   id: string;
   username: string;
-  imageUrl: string;
+  // imageUrl: string;
 }
 
 export interface SendMessageArgs {

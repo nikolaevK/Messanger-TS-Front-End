@@ -2,6 +2,7 @@ import {
   Conversation,
   ConversationsData,
   ConversationsQueryVariables,
+  ConversationUpdatedData,
   MarkConversationAsReadVariables,
   Participant,
 } from "@/util/types";
@@ -9,7 +10,7 @@ import { Box } from "@chakra-ui/react";
 import { Session } from "next-auth";
 import React, { useEffect } from "react";
 import ConversationsOperations from "../../../apollographql/operations/conversation";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
 import ConversationList from "./ConversationList";
@@ -43,6 +44,30 @@ export default function ConversationWrapper({
       variables: { session },
       onError: ({ message }) => {
         toast.error(message);
+      },
+    }
+  );
+  // Subscribing to Updated field on Conversation entity
+  // to display read status and latest message
+  useSubscription<ConversationUpdatedData, { session: Session }>(
+    ConversationsOperations.Subscriptions.conversationUpdated,
+    {
+      variables: { session },
+      onData: ({ client, data }) => {
+        const { data: subscriptionData } = data;
+        console.log("useSubscription");
+        if (!subscriptionData) return;
+
+        const {
+          conversationUpdated: { conversation },
+        } = subscriptionData;
+
+        // does conversation matches url id from query
+        const currentlyViewingConversation = conversation.id === conversationId; // coming from url
+
+        // The user who is in conversation will not have an indication of unread message
+        if (currentlyViewingConversation)
+          onViewConversation(conversationId, false);
       },
     }
   );
@@ -83,9 +108,6 @@ export default function ConversationWrapper({
       },
     });
   };
-  useEffect(() => {
-    subscribeToNewConversations();
-  }, []);
 
   // Marking conversation read Mutation
   const [markConversationAsRead] = useMutation<
@@ -168,6 +190,10 @@ export default function ConversationWrapper({
       console.log("onViewConversation", error);
     }
   }
+
+  useEffect(() => {
+    subscribeToNewConversations();
+  }, []);
 
   return (
     <Box

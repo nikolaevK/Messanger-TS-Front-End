@@ -5,7 +5,7 @@ import { BsSend } from "react-icons/bs";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import { EmojiProps, SendMessageArgs } from "@/util/types";
+import { EmojiProps, MessageData, SendMessageArgs } from "@/util/types";
 import { useMutation } from "@apollo/client";
 import MessageOperations from "../../../apollographql/operations/message";
 import toast from "react-hot-toast";
@@ -50,6 +50,45 @@ export default function MessageInput({
       const { data, errors } = await sendMessage({
         variables: {
           ...newMessage,
+        },
+        // caching data
+        optimisticResponse: {
+          sendMessage: true,
+        },
+        update: (cache) => {
+          // reading cached data
+          const existing = cache.readQuery<MessageData>({
+            query: MessageOperations.Query.messages,
+            variables: { conversationId, session },
+          }) as MessageData;
+
+          // write new cache
+          cache.writeQuery<
+            MessageData,
+            { conversationId: string; session: Session }
+          >({
+            query: MessageOperations.Query.messages,
+            variables: { conversationId, session },
+            data: {
+              ...existing,
+              messages: [
+                {
+                  id: messageId,
+                  body: message,
+                  senderId: session.user.id,
+                  conversationId,
+                  imageUrl: session.user.image!,
+                  sender: {
+                    id: session.user.id,
+                    username: session.user.username,
+                  },
+                  createdAt: new Date(Date.now()),
+                  updatedAt: new Date(Date.now()),
+                },
+                ...existing?.messages,
+              ],
+            },
+          });
         },
       });
       if (!data?.sendMessage) throw new Error("sendMessage");

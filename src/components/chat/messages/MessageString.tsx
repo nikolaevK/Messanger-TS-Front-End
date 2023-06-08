@@ -19,7 +19,6 @@ export default function MessageString({
   message,
   sentByMe,
 }: MessageStringProps) {
-  console.log(message);
   return (
     <Stack
       direction="row"
