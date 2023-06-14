@@ -48,7 +48,6 @@ export default function ConversationList({
         const participant = conversation.participants.find(
           (p) => p.user.id === userId
         );
-        console.log(conversation);
         return (
           <ConversationItem
             session={session}

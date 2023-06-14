@@ -3,9 +3,10 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getSession } from "next-auth/react";
-// "https://messenger-app-server.herokuapp.com/graphql";
+// "https://messenger-app-server.herokuapp.com/graphql"; http://localhost:4000/graphql
+
 const httpLink = new HttpLink({
-  uri: "http://localhost:4000/graphql",
+  uri: "https://messenger-app-server.herokuapp.com/graphql",
   credentials: "include",
 });
 
@@ -13,7 +14,7 @@ const wsLink =
   typeof window !== "undefined" // checking if is is SSR or the actual window
     ? new GraphQLWsLink(
         createClient({
-          url: "ws://localhost:4000/graphql/subscriptions",
+          url: "ws://messenger-app-server.herokuapp.com/graphql/subscriptions",
           connectionParams: async () => ({
             session: await getSession(),
           }),
