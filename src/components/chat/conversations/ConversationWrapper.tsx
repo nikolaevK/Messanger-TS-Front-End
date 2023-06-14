@@ -52,10 +52,9 @@ export default function ConversationWrapper({
   useSubscription<ConversationUpdatedData, { session: Session }>(
     ConversationsOperations.Subscriptions.conversationUpdated,
     {
-      variables: { session },
+      variables: { session }, // NEED TO PASS VARIABLES INTO THE CONVERSATION_UPDATED SUBSCRIPTION
       onData: ({ client, data }) => {
         const { data: subscriptionData } = data;
-        console.log("useSubscription");
         if (!subscriptionData) return;
 
         const {

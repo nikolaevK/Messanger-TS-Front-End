@@ -5,12 +5,12 @@ datasource db {
 
 generator client {
   provider        = "prisma-client-js"
-  binaryTargets = ["native", "darwin"] //needed for mac m1 processors
+  binaryTargets = ["native", "darwin-arm64", "darwin", "darwin-arm64", "debian-openssl-3.0.x"] //needed for mac m1 processors
 }
 
 model Account {
   id  String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId             String
+  userId             String   @db.ObjectId
   type               String
   provider           String
   providerAccountId  String
@@ -30,7 +30,7 @@ model Account {
 model Session {
   id  String  @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
-  userId       String
+  userId       String   @db.ObjectId
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
