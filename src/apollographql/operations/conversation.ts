@@ -51,6 +51,14 @@ export default {
         )
       }
     `,
+    deleteConversation: gql`
+      mutation DeleteConversation(
+        $conversationId: String!
+        $session: Session!
+      ) {
+        deleteConversation(conversationId: $conversationId, session: $session)
+      }
+    `,
   },
   Subscriptions: {
     conversationCreated: gql`
@@ -66,6 +74,13 @@ export default {
           conversation {
             ${ConversationFields}
           }
+        }
+      }
+    `,
+    conversationDeleted: gql`
+      subscription ConversationDeleted($session: Session!) {
+        conversationDeleted(session: $session) {
+          id
         }
       }
     `,

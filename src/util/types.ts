@@ -95,6 +95,17 @@ export interface MarkConversationAsReadVariables {
   session: Session;
 }
 
+export interface DeleteConversationVariables {
+  conversationId: string;
+  session: Session;
+}
+
+export interface ConversationDeletedData {
+  conversationDeleted: {
+    id: string;
+  };
+}
+
 // Message
 
 export interface Message {

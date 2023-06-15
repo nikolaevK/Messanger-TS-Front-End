@@ -7,6 +7,10 @@ import CreateConversation from "./CreateConversation";
 import CreateConversationModal from "./CreateConversationModal";
 import ConversationItem from "./Conversation";
 import { useRouter } from "next/router";
+import ConversationsOperations from "../../../apollographql/operations/conversation";
+import { useMutation } from "@apollo/client";
+import { DeleteConversationVariables } from "../../../util/types";
+import toast from "react-hot-toast";
 
 interface ConversationListProps {
   session: Session;
@@ -29,6 +33,42 @@ export default function ConversationList({
   const {
     user: { id: userId },
   } = session;
+
+  // Delete conversation mutation
+  const [deleteConversation] = useMutation<
+    { deletedConversation: boolean },
+    DeleteConversationVariables
+  >(ConversationsOperations.Mutations.deleteConversation);
+
+  async function onDeleteConversation(conversationId: string) {
+    console.log({ conversationId });
+    try {
+      // toast will display according status of mutation
+      toast.promise(
+        deleteConversation({
+          variables: {
+            conversationId,
+            session,
+          },
+          update: () => {
+            // redirects to the home page when conversation is deleted
+            router.replace(
+              typeof process.env.NEXT_PUBLIC_URL === "string"
+                ? process.env.NEXT_PUBLIC_URL
+                : ""
+            );
+          },
+        }),
+        {
+          loading: "Deleting",
+          success: "Conversation deleted",
+          error: "Failed to delete conversation",
+        }
+      );
+    } catch (error: any) {
+      console.log("onDeleteConversation error: " + error);
+    }
+  }
 
   // sorting conversations by most recent
   const sortedConversations = [...conversations].sort(
@@ -53,6 +93,7 @@ export default function ConversationList({
             session={session}
             conversation={conversation}
             isSelected={conversation.id === router.query.conversationId}
+            onDeleteConversation={onDeleteConversation}
             key={conversation.id}
             hasSeenLatestMessage={participant?.hasSeenLatestMessage!}
             userId={userId}

@@ -31,7 +31,7 @@ export default function UserSearchList({
               mt={4}
               _hover={{ bg: "whiteAlpha.200" }}
             >
-              <Avatar />
+              <Avatar src={user.image} />
               <Flex justify="space-between" align="center" width="100%">
                 <Text color="whiteAlpha.700">{user.username}</Text>
                 <Button

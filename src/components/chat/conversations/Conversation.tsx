@@ -1,12 +1,24 @@
 import { formatUserImageURL, formatUsernames } from "@/util/functions";
 import { Conversation } from "@/util/types";
-import { Avatar, AvatarGroup, Box, Flex, Stack, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  AvatarGroup,
+  Box,
+  Flex,
+  Menu,
+  MenuItem,
+  MenuList,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { formatRelative } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import { Session } from "next-auth";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import { GoPrimitiveDot } from "react-icons/go";
+import { MdDeleteOutline } from "react-icons/md";
+import { BiLogOut } from "react-icons/bi";
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -15,6 +27,7 @@ interface ConversationItemProps {
   isSelected: boolean;
   hasSeenLatestMessage: boolean;
   session: Session;
+  onDeleteConversation: (conversationId: string) => void;
 }
 
 const formatRelativeLocale = {
@@ -30,12 +43,23 @@ export default function ConversationItem({
   userId,
   conversation,
   onClick,
-  session,
+  onDeleteConversation,
 }: ConversationItemProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const { participants } = conversation;
   const {
     query: { conversationId },
   } = useRouter();
+
+  // Right mouse click or left mouse click
+  const handleClick = (event: React.MouseEvent) => {
+    if (event.type === "click") {
+      onClick();
+    } else if (event.type === "contextmenu") {
+      event.preventDefault();
+      setMenuOpen(true);
+    }
+  };
 
   return (
     <Stack
@@ -52,8 +76,39 @@ export default function ConversationItem({
       _hover={{ bg: "whiteAlpha.200" }}
       position="relative"
       onClick={onClick}
+      onContextMenu={handleClick}
       height="80px"
     >
+      <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
+        <MenuList bg="#2d2d2d">
+          {conversation.participants.length > 2 ? (
+            <MenuItem
+              icon={<BiLogOut fontSize={20} />}
+              onClick={(event) => {
+                event.stopPropagation();
+                // onLeaveConversation(conversation);
+              }}
+              bg="#2d2d2d"
+              _hover={{ bg: "whiteAlpha.300" }}
+            >
+              Leave
+            </MenuItem>
+          ) : (
+            <MenuItem
+              icon={<MdDeleteOutline fontSize={20} />}
+              onClick={(event) => {
+                event.stopPropagation();
+                onDeleteConversation(conversation.id);
+              }}
+              bg="#2d2d2d"
+              _hover={{ bg: "whiteAlpha.300" }}
+            >
+              Delete
+            </MenuItem>
+          )}
+        </MenuList>
+      </Menu>
+
       <Flex position="absolute" left="px">
         {hasSeenLatestMessage === false && (
           <GoPrimitiveDot fontSize={18} color="#3d84f7" />

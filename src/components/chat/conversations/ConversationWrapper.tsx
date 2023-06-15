@@ -1,5 +1,6 @@
 import {
   Conversation,
+  ConversationDeletedData,
   ConversationsData,
   ConversationsQueryVariables,
   ConversationUpdatedData,
@@ -53,7 +54,7 @@ export default function ConversationWrapper({
     ConversationsOperations.Subscriptions.conversationUpdated,
     {
       variables: { session }, // NEED TO PASS VARIABLES INTO THE CONVERSATION_UPDATED SUBSCRIPTION
-      onData: ({ client, data }) => {
+      onData: ({ data }) => {
         const { data: subscriptionData } = data;
         if (!subscriptionData) return;
 
@@ -67,6 +68,51 @@ export default function ConversationWrapper({
         // The user who is in conversation will not have an indication of unread message
         if (currentlyViewingConversation)
           onViewConversation(conversationId, false);
+      },
+    }
+  );
+
+  // Subscribe to deleteConversation
+  // to display deletion of conversation in ui
+  useSubscription<ConversationDeletedData, { session: Session }>(
+    ConversationsOperations.Subscriptions.conversationDeleted,
+    {
+      variables: { session },
+      onData: ({ client, data }) => {
+        const { data: subscriptionData } = data;
+        console.log({ subscriptionData });
+        if (!subscriptionData) return;
+
+        // Checking if there are any conversations on the client/cache
+        // before delete subscription executed, changing cache to display
+        // change immediately, without lag
+        // existing conversations in the cache
+        const existing = client.readQuery<ConversationsData>({
+          query: ConversationsOperations.Queries.conversations,
+          variables: { session }, // needs to have same inputs as regular query mutation
+        });
+        // if don't exist, nothing to display
+        console.log("before");
+        console.log(existing?.conversations);
+        if (!existing) return;
+        console.log("past existing");
+        const { conversations } = existing;
+        const {
+          conversationDeleted: { id: deletedConversationId },
+        } = subscriptionData;
+
+        // removing deleted conversation from the cache to display immediate changes
+        client.writeQuery<ConversationsData>({
+          query: ConversationsOperations.Queries.conversations,
+          variables: { session }, // needs to have same inputs as regular query mutation
+          data: {
+            conversations: conversations.filter(
+              (conversation) => conversation.id !== deletedConversationId
+            ),
+          },
+        });
+
+        router.push("/");
       },
     }
   );
