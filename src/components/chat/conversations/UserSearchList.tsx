@@ -13,7 +13,7 @@ export default function UserSearchList({
 }: UserSearchListProps) {
   return (
     <>
-      {users.length < 0 ? (
+      {users.length == 0 ? (
         <Flex mt={6} justify="center">
           <Text>No Users Found</Text>
         </Flex>

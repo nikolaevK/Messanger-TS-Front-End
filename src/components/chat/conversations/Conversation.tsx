@@ -28,6 +28,7 @@ interface ConversationItemProps {
   hasSeenLatestMessage: boolean;
   session: Session;
   onDeleteConversation: (conversationId: string) => void;
+  onLeaveConversation: (conversationId: string) => void;
 }
 
 const formatRelativeLocale = {
@@ -44,6 +45,7 @@ export default function ConversationItem({
   conversation,
   onClick,
   onDeleteConversation,
+  onLeaveConversation,
 }: ConversationItemProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { participants } = conversation;
@@ -86,7 +88,7 @@ export default function ConversationItem({
               icon={<BiLogOut fontSize={20} />}
               onClick={(event) => {
                 event.stopPropagation();
-                // onLeaveConversation(conversation);
+                onLeaveConversation(conversation.id);
               }}
               bg="#2d2d2d"
               _hover={{ bg: "whiteAlpha.300" }}

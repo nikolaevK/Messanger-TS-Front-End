@@ -100,6 +100,11 @@ export interface DeleteConversationVariables {
   session: Session;
 }
 
+export interface LeaveConversationVariables {
+  conversationId: string;
+  session: Session;
+}
+
 export interface ConversationDeletedData {
   conversationDeleted: {
     id: string;

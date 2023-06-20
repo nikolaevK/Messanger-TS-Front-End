@@ -1,4 +1,4 @@
-import { Conversation } from "@/util/types";
+import { Conversation, LeaveConversationVariables } from "@/util/types";
 import { Box, Button } from "@chakra-ui/react";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
@@ -40,8 +40,13 @@ export default function ConversationList({
     DeleteConversationVariables
   >(ConversationsOperations.Mutations.deleteConversation);
 
+  // leave conversation mutation
+  const [leaveConversation] = useMutation<
+    { leaveConversation: boolean },
+    LeaveConversationVariables
+  >(ConversationsOperations.Mutations.leaveConversation);
+
   async function onDeleteConversation(conversationId: string) {
-    console.log({ conversationId });
     try {
       // toast will display according status of mutation
       toast.promise(
@@ -70,6 +75,35 @@ export default function ConversationList({
     }
   }
 
+  async function onLeaveConversation(conversationId: string) {
+    try {
+      // toast will display according status of mutation
+      toast.promise(
+        leaveConversation({
+          variables: {
+            conversationId,
+            session,
+          },
+          update: () => {
+            // redirects to the home page when conversation is deleted
+            router.replace(
+              typeof process.env.NEXT_PUBLIC_URL === "string"
+                ? process.env.NEXT_PUBLIC_URL
+                : ""
+            );
+          },
+        }),
+        {
+          loading: "Leaving conversation",
+          success: "You left the conversation",
+          error: "Failed to leave conversation",
+        }
+      );
+    } catch (error: any) {
+      console.log("onLeaveConversation error: " + error);
+    }
+  }
+
   // sorting conversations by most recent
   const sortedConversations = [...conversations].sort(
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
@@ -94,6 +128,7 @@ export default function ConversationList({
             conversation={conversation}
             isSelected={conversation.id === router.query.conversationId}
             onDeleteConversation={onDeleteConversation}
+            onLeaveConversation={onLeaveConversation}
             key={conversation.id}
             hasSeenLatestMessage={participant?.hasSeenLatestMessage!}
             userId={userId}

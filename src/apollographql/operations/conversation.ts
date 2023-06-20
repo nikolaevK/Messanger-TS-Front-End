@@ -51,6 +51,11 @@ export default {
         )
       }
     `,
+    leaveConversation: gql`
+      mutation LeaveConversation($conversationId: String!, $session: Session!) {
+        leaveConversation(conversationId: $conversationId, session: $session)
+      }
+    `,
     deleteConversation: gql`
       mutation DeleteConversation(
         $conversationId: String!

@@ -80,7 +80,6 @@ export default function ConversationWrapper({
       variables: { session },
       onData: ({ client, data }) => {
         const { data: subscriptionData } = data;
-        console.log({ subscriptionData });
         if (!subscriptionData) return;
 
         // Checking if there are any conversations on the client/cache
@@ -92,10 +91,7 @@ export default function ConversationWrapper({
           variables: { session }, // needs to have same inputs as regular query mutation
         });
         // if don't exist, nothing to display
-        console.log("before");
-        console.log(existing?.conversations);
         if (!existing) return;
-        console.log("past existing");
         const { conversations } = existing;
         const {
           conversationDeleted: { id: deletedConversationId },
