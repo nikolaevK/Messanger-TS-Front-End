@@ -1,8 +1,8 @@
 import Auth from "@/components/Auth";
 import Chat from "@/components/chat/Chat";
-import { Box, Button } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { getServerSession } from "next-auth/next";
-import { getSession, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { authOptions } from "./api/auth/[...nextauth]";
 
 export default function Home() {
