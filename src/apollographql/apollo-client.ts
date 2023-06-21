@@ -14,7 +14,7 @@ const wsLink =
   typeof window !== "undefined" // checking if is is SSR or the actual window
     ? new GraphQLWsLink(
         createClient({
-          url: "ws://messenger-app-server.herokuapp.com/graphql/subscriptions",
+          url: "wss://messenger-app-server.herokuapp.com/graphql/subscriptions",
           connectionParams: async () => ({
             session: await getSession(),
           }),
